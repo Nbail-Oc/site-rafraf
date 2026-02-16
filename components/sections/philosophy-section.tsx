@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useMobileViewport } from "@/hooks/use-mobile-viewport";
 
 export function PhilosophySection() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -9,9 +10,19 @@ export function PhilosophySection() {
   const [forestTranslateX, setForestTranslateX] = useState(100);
   const [titleOpacity, setTitleOpacity] = useState(1);
   const rafRef = useRef<number | null>(null);
+  const { isMobile } = useMobileViewport();
+
+  // On mobile, disable complex scroll animations
+  const enableScrollAnimation = !isMobile;
 
   const updateTransforms = useCallback(() => {
-    if (!sectionRef.current) return;
+    if (!enableScrollAnimation || !sectionRef.current) {
+      // Reset to initial state on mobile
+      setAlpineTranslateX(-100);
+      setForestTranslateX(100);
+      setTitleOpacity(1);
+      return;
+    }
     
     const rect = sectionRef.current.getBoundingClientRect();
     const windowHeight = window.innerHeight;
@@ -30,9 +41,15 @@ export function PhilosophySection() {
     
     // Title fades out as blocks come together
     setTitleOpacity(1 - progress);
-  }, []);
+  }, [enableScrollAnimation]);
 
   useEffect(() => {
+    // Skip animation on mobile
+    if (!enableScrollAnimation) {
+      updateTransforms();
+      return;
+    }
+
     const handleScroll = () => {
       // Cancel any pending animation frame
       if (rafRef.current) {
@@ -52,34 +69,35 @@ export function PhilosophySection() {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [updateTransforms]);
+  }, [updateTransforms, enableScrollAnimation]);
 
   return (
     <section id="products" className="bg-background">
       {/* Scroll-Animated Product Grid */}
-      <div ref={sectionRef} className="relative" style={{ height: "200vh" }}>
-        <div className="sticky top-0 h-screen flex items-center justify-center">
+      <div ref={sectionRef} className="relative" style={{ height: enableScrollAnimation ? "200vh" : "auto" }}>
+        <div className={`${enableScrollAnimation ? 'sticky top-0' : ''} h-screen flex items-center justify-center`}>
           <div className="relative w-full">
-            {/* Title - positioned behind the blocks */}
+            {/* Title - positioned behind the blocks - responsive sizing */}
             <div 
               className="absolute inset-0 flex items-center justify-center pointer-events-none z-0"
-              style={{ opacity: titleOpacity }}
+              style={{ opacity: enableScrollAnimation ? titleOpacity : 0 }}
             >
-              <h2 className="text-[12vw] font-medium leading-[0.95] tracking-tighter text-foreground md:text-[10vw] lg:text-[8vw] text-center px-6">
+              <h2 className="text-3xl md:text-6xl lg:text-[8vw] font-medium leading-[0.95] tracking-tighter text-foreground text-center px-6 text-balance">
                 Farm Fresh. Export Ready.
               </h2>
             </div>
 
-            {/* Product Grid */}
-            <div className="relative z-10 grid grid-cols-1 gap-4 px-6 md:grid-cols-2 md:px-12 lg:px-20">
-              {/* Alpine Image - comes from left */}
+            {/* Product Grid - stack vertically on mobile */}
+            <div className="relative z-10 grid grid-cols-1 gap-3 md:gap-4 px-4 md:grid-cols-2 md:px-12 lg:px-20">
+              {/* Alpine Image - comes from left - no animation on mobile */}
               <div 
-                className="relative aspect-[4/3] overflow-hidden rounded-2xl"
+                className="relative aspect-[4/3] overflow-hidden rounded-lg md:rounded-2xl"
                 style={{
-                  transform: `translate3d(${alpineTranslateX}%, 0, 0)`,
-                  WebkitTransform: `translate3d(${alpineTranslateX}%, 0, 0)`,
+                  transform: `translate3d(${enableScrollAnimation ? alpineTranslateX : 0}%, 0, 0)`,
+                  WebkitTransform: `translate3d(${enableScrollAnimation ? alpineTranslateX : 0}%, 0, 0)`,
                   backfaceVisibility: 'hidden',
                   WebkitBackfaceVisibility: 'hidden',
+                  transition: enableScrollAnimation ? 'none' : 'transform 0.3s ease-out',
                 }}
               >
                 <Image
@@ -95,14 +113,15 @@ export function PhilosophySection() {
                 </div>
               </div>
 
-              {/* Forest Image - comes from right */}
+              {/* Forest Image - comes from right - no animation on mobile */}
               <div 
-                className="relative aspect-[4/3] overflow-hidden rounded-2xl"
+                className="relative aspect-[4/3] overflow-hidden rounded-lg md:rounded-2xl"
                 style={{
-                  transform: `translate3d(${forestTranslateX}%, 0, 0)`,
-                  WebkitTransform: `translate3d(${forestTranslateX}%, 0, 0)`,
+                  transform: `translate3d(${enableScrollAnimation ? forestTranslateX : 0}%, 0, 0)`,
+                  WebkitTransform: `translate3d(${enableScrollAnimation ? forestTranslateX : 0}%, 0, 0)`,
                   backfaceVisibility: 'hidden',
                   WebkitBackfaceVisibility: 'hidden',
+                  transition: enableScrollAnimation ? 'none' : 'transform 0.3s ease-out',
                 }}
               >
                 <Image
@@ -122,13 +141,13 @@ export function PhilosophySection() {
         </div>
       </div>
 
-      {/* Description */}
-      <div className="px-6 py-20 md:px-12 md:py-28 lg:px-20 lg:py-36 lg:pb-14">
+      {/* Description - responsive padding and text */}
+      <div className={`px-4 py-12 md:px-12 md:py-28 lg:px-20 lg:py-36 lg:pb-14 ${enableScrollAnimation ? '' : 'py-20'}`}>
         <div className="text-center">
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
             Direct from Source
           </p>
-          <p className="mt-8 leading-relaxed text-muted-foreground text-3xl text-center text-balance">
+          <p className="mt-6 md:mt-8 leading-relaxed text-muted-foreground text-lg md:text-2xl lg:text-3xl text-center text-balance">
             RafRaf International connects premium Indian produce directly with UAE businesses. 
             We partner with trusted farmers to deliver fresh, organic vegetables and fruits that meet international quality standards.
           </p>

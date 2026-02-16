@@ -19,19 +19,19 @@ export function Header() {
 
   return (
     <header 
-      className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-3xl transition-all duration-300 ${isScrolled ? "bg-background/80 backdrop-blur-md rounded-full" : "bg-transparent"}`}
+      className={`fixed top-2 left-1/2 -translate-x-1/2 z-50 w-[95%] md:w-[90%] max-w-3xl transition-all duration-300 ${isScrolled ? "bg-background/80 backdrop-blur-md rounded-full" : "bg-transparent"}`}
       style={{
         boxShadow: isScrolled ? "rgba(14, 63, 126, 0.04) 0px 0px 0px 1px, rgba(42, 51, 69, 0.04) 0px 1px 1px -0.5px, rgba(42, 51, 70, 0.04) 0px 3px 3px -1.5px, rgba(42, 51, 70, 0.04) 0px 6px 6px -3px, rgba(14, 63, 126, 0.04) 0px 12px 12px -6px, rgba(14, 63, 126, 0.04) 0px 24px 24px -12px" : "none"
       }}
     >
-      <div className="flex items-center justify-between transition-all duration-300 px-2 pl-5 py-2">
-        {/* Logo */}
-        <Link href="#" className={`text-lg font-medium tracking-tight transition-colors duration-300 ${isScrolled ? "text-foreground" : "text-white"}`}>
+      <div className="flex items-center justify-between transition-all duration-300 px-3 md:px-2 md:pl-5 py-2 md:py-2">
+        {/* Logo - responsive font size */}
+        <Link href="#" className={`text-base md:text-lg font-medium tracking-tight transition-colors duration-300 truncate ${isScrolled ? "text-foreground" : "text-white"}`}>
           RafRaf International
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-10 md:flex">
+        <nav className="hidden items-center gap-8 md:gap-10 md:flex">
           <Link
             href="#products"
             className={`text-sm transition-colors ${isScrolled ? "text-muted-foreground hover:text-foreground" : "text-white/70 hover:text-white"}`}
@@ -68,52 +68,53 @@ export function Header() {
           </Link>
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Menu Button - 48px touch target */}
         <button
           type="button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className={`transition-colors md:hidden ${isScrolled ? "text-foreground" : "text-white"}`}
-          aria-label="Toggle menu"
+          className={`flex items-center justify-center w-12 h-12 -mr-2 md:hidden transition-colors ${isScrolled ? "text-foreground" : "text-white"}`}
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isMenuOpen}
         >
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - improved touch spacing */}
       {isMenuOpen && (
-        <div className="border-t border-border bg-background px-6 py-8 md:hidden rounded-b-2xl">
-          <nav className="flex flex-col gap-6">
+        <div className="border-t border-border bg-background px-4 md:px-6 py-6 md:py-8 md:hidden rounded-b-2xl max-h-[calc(100vh-80px)] overflow-y-auto">
+          <nav className="flex flex-col gap-4 md:gap-6">
             <Link
               href="#products"
-              className="text-lg text-foreground"
+              className="text-lg py-2 text-foreground transition-colors hover:text-accent"
               onClick={() => setIsMenuOpen(false)}
             >
               Products
             </Link>
             <Link
               href="#our-process"
-              className="text-lg text-foreground"
+              className="text-lg py-2 text-foreground transition-colors hover:text-accent"
               onClick={() => setIsMenuOpen(false)}
             >
               Our Process
             </Link>
             <Link
               href="#gallery"
-              className="text-lg text-foreground"
+              className="text-lg py-2 text-foreground transition-colors hover:text-accent"
               onClick={() => setIsMenuOpen(false)}
             >
               Gallery
             </Link>
             <Link
               href="#about"
-              className="text-lg text-foreground"
+              className="text-lg py-2 text-foreground transition-colors hover:text-accent"
               onClick={() => setIsMenuOpen(false)}
             >
               About Us
             </Link>
             <Link
               href="#contact"
-              className="mt-4 bg-accent px-5 py-3 text-center text-sm font-medium text-accent-foreground rounded-full"
+              className="mt-4 bg-accent px-5 py-3 text-center text-sm font-medium text-accent-foreground rounded-full hover:opacity-90 transition-all"
               onClick={() => setIsMenuOpen(false)}
             >
               Contact Us
